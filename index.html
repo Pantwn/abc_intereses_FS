@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SISTEMA ABC PROFESIONAL v17.0 - DISTRITO FRESNILLO</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    
+    <style>
+        /* VARIABLES DE DISEÑO PROFESIONAL */
+        :root { 
+            --primary-dark: #1a252f; 
+            --shadow: 0 10px 30px rgba(0,0,0,0.3);
+            --color-a: #1b5e20;
+            --color-b: #f9a825;
+            --color-c: #b71c1c;
+            --color-bautizado: #6a1b9a;
+            --oro-linear: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            --morado-metal: linear-gradient(45deg, #6a1b9a, #e1bee7, #4a148c, #ba68c8, #6a1b9a);
+        }
+        
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; padding-bottom: 120px; color: #333; }
+
+
+        /* DASHBOARD IGLESIAS (COMO LOS TENÍAS) */
+        .dashboard-iglesias { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; justify-content: center; }
+        .iglesia-stat-card {
+            background: white; min-width: 60px; padding: 5px; border-radius: 10px;
+            box-shadow: var(--shadow); text-align: center; border-bottom: 3px solid #ccc;
+            cursor: pointer; transition: 0.2s;
+            flex: 1 1 65px;   /* Esto permite que se acomoden mejor en filas */
+                max-width: 85px;  /* Evita que se estiren demasiado */
+        }
+        .iglesia-stat-card h6 { font-size: 10px; font-weight: bold; margin: 0; color: #333; }
+        .iglesia-stat-card .count { font-size: 14px; font-weight: 800; }
+
+        /* ANIMACIONES METÁLICAS (RECUPERADAS) */
+        @keyframes brilloMetal {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .tag-s-animado {
+            background: var(--oro-linear) !important;
+            background-size: 400% 400% !important;
+            animation: brilloMetal 3s linear infinite !important;
+            color: #000 !important; font-weight: 900; border: 1px solid #d4af37;
+        }
+
+        .tag-ok-animado {
+            background: var(--morado-metal) !important;
+            background-size: 400% 400% !important;
+            animation: brilloMetal 4s ease infinite !important;
+            color: #fff !important; font-weight: 900;
+        }
+
+        /* DASHBOARD DE IGLESIAS */
+        .dashboard-iglesias { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; justify-content: center;  }
+        
+
+        .iglesia-stat-card {
+            background: white; min-width: 50px; padding: 8px; border-radius: 12px;
+            box-shadow: var(--shadow); text-align: center; border-bottom: 8px solid #ccc;
+            cursor: pointer; transition: 0.9s;
+        }
+        .iglesia-stat-card:hover { transform: translateY(-3px); background: #fdfdfd; }
+        .iglesia-stat-card h6 { font-size: 10px; font-weight: bold; margin: 0; color: #333; }
+        .iglesia-stat-card .count { font-size: 16px; font-weight: 800; }
+
+        /* BUSCADOR Y HERRAMIENTAS */
+        .search-box { 
+            background: white; border-radius: 50px; padding: 12px 30px; 
+            box-shadow: var(--shadow); border: 1px solid #ddd; display: flex; align-items: center;
+        }
+        .search-box input { border: none; outline: none; background: transparent; width: 100%; font-size: 18px; }
+
+        .filtro-categorias { display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; flex-wrap: wrap; }
+                .btn-categoria {
+                    border: none; border-radius: 15px; padding: 6px 12px; font-weight: bold;
+                    box-shadow: var(--shadow); cursor: pointer; transition: 0.3s; color: white;
+                    display: flex; align-items: center; gap: 5px; font-size: 13px; text-transform: uppercase;
+                }
+                .btn-categoria:hover { transform: translateY(-2px); }
+                .btn-categoria span { background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 8px; font-size: 12px; }
+
+                .btn-cat-ok { background: var(--morado-metal); background-size: 400%; animation: brilloMetal 3s infinite; }
+                .btn-cat-s  { background: var(--oro-linear); background-size: 400%; animation: brilloMetal 3s infinite; color: #000 !important; border: 1px solid #d4af37; }
+                .btn-cat-a  { background-color: var(--color-a); }
+                .btn-cat-b  { background-color: var(--color-b); color: #000 !important; }
+                .btn-cat-c  { background-color: var(--color-c); }
+                .btn-cat-reset { background-color: #555; }
+
+                @keyframes brilloMetal { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+
+        /* LISTADO Y VISTAS */
+        #listaEstudios { display: flex; flex-wrap: wrap; gap: 25px; justify-content: center; }
+        
+        /* Vista de Tarjeta */
+        .estudio-card {
+            background: white; border-radius: 25px; padding: 25px; width: 100%; max-width: 550px;
+            box-shadow: var(--shadow); position: relative; border-left: 15px solid transparent;
+            cursor: pointer; transition: 0.3s; overflow: hidden;
+        }
+        .estudio-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+
+
+        .estudio-card {
+            background: white; 
+            border-radius: 15px; /* Menos curva */
+            padding: 15px;      /* Más compacto */
+            width: 100%; 
+            max-width: 450px;   /* Más angosta */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            position: relative; 
+            border-left: 10px solid transparent; /* Borde de color más fino */
+            cursor: pointer; 
+            transition: 0.3s;
+        }
+
+
+
+
+        /* Vista de Lista Compacta */
+        .estudio-card.compacta {
+            max-width: 100%; padding: 12px 25px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .estudio-card.compacta .clasificacion-tag { position: relative; top: 0; right: 0; min-width: 40px; text-align: center; }
+
+        .clasificacion-tag {
+                    position: absolute; 
+                    top: 0;
+
+                    right: 0; 
+                    padding: 5px 15px; /* Más pequeña */
+                    border-bottom-left-radius: 15px; 
+                    color: white; 
+                    font-weight: bold; 
+                    font-size: 13px; 
+                    text-transform: uppercase;
+                }
+
+        /* ETIQUETAS DE EDAD Y NIÑOS */
+        .badge-nino { background-color: #ff80ab; color: white; padding: 5px 12px; border-radius: 10px; font-size: 12px; font-weight: bold; margin-left: 15px; }
+        .badge-bautismo-inf { background: linear-gradient(to right, #00bcd4, #2196f3); color: white; padding: 5px 12px; border-radius: 10px; font-size: 12px; animation: glow 2s infinite;  }
+        
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 5px #00bcd4; } 50% { box-shadow: 0 0 20px #2196f3; } }
+
+        
+
+
+
+
+        /* ESTILO DE LOS BOTONES FLOTANTES (FAB) */
+        .fab-container { 
+            position: fixed; 
+            bottom: 20px; 
+            right: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            z-index: 2000; 
+        }
+
+        .btn-fab { 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 50%; 
+            border: none; 
+            color: white; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            font-size: 20px;
+        }
+
+        /* Efecto al pasar el mouse o tocar */
+        .btn-fab:hover { 
+            transform: scale(1.1) translateY(-3px); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4); 
+        }
+
+        /* Colores específicos para los botones */
+        .bg-primary { background-color: #007bff !important; } /* Compartir */
+        .bg-dark { background-color: #343a40 !important; }    /* Imprimir */
+        .bg-success { background-color: #28a745 !important; } /* Agregar (+) */
+
+        /* Ajuste para iconos de FontAwesome dentro del FAB */
+        .btn-fab i {
+            pointer-events: none;
+        }
+        
+
+
+
+
+
+        /* MODALES */
+        .modal-box {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: white; padding: 20px; border-radius: 20px; width: 95%; max-width: 450px;
+            z-index: 3000; box-shadow: 0 30px 120px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto;
+        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2500; backdrop-filter: blur(10px); }
+
+        
+
+
+
+
+        /* IMPRESIÓN */
+        #capaImpresion { display: none; }
+        @media print {
+            body * { display: none !important; }
+            #capaImpresion { display: block !important; padding: 0; }
+            .hoja-print { padding: 50px; page-break-after: always; color: #000; }
+            .header-print { text-align: center; border-bottom: 5px solid #000; margin-bottom: 40px; }
+            .row-print { border-bottom: 1px solid #ddd; padding: 15px 0; display: flex; justify-content: space-between; align-items: center; }
+        }
+
+
+        /* AGREGA ESTO PARA COMPACTAR EL POPUP */
+
+        /* 1. El encabezado (la parte que tiene el nombre y color) */
+        #detHeader {
+            margin: -20px -20px 15px; /* El -20px debe coincidir con el padding de .modal-box */
+            padding: 15px 20px;       /* Reducimos el grosor vertical */
+            border-radius: 20px 20px 0 0;
+            color: white;
+            text-align: left;
+        }
+
+        #detHeader h2 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+
+
+        /* 2. El cuerpo (donde están los datos como Edad, Instructor, etc.) */
+        #detCuerpo {
+            line-height: 1.1;    /* ESTO ES LO MÁS IMPORTANTE: junta las líneas */
+            font-size: 1rem;
+        }
+
+        /* 3. Los párrafos dentro del cuerpo */
+        #detCuerpo p {
+            margin-bottom: 2px;  /* Reduce el espacio entre cada renglón de información */
+            display: flex;
+            align-items: center;
+            gap: 10px;           /* Espacio entre el icono y el texto */
+        }
+
+        /* 4. Los iconos dentro del popup */
+        #detCuerpo i {
+            width: 20px;         /* Alinea los iconos para que el texto se vea parejo */
+            text-align: center;
+            color: #666;
+        }
+
+
+
+
+
+
+
+        /* Botón Flotante de la Nube con Desvanecimiento */
+        #btnNubeFlash {
+            position: fixed;
+            bottom: 220px; 
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #00bcd4; /* Color Cian Nube */
+            color: white;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            z-index: 2100;
+            transition: opacity 1.5s ease, transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            opacity: 1;
+        }
+
+        #btnNubeFlash:hover {
+            transform: scale(1.1);
+        }
+
+        /* Clase para ocultar el botón suavemente */
+        .fade-out {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="catInfoBox" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; background: #000; color: #fff; padding: 20px; border-radius: 20px; display: none; width: 90%; max-width: 550px; border: 2px solid #bf953f; text-align: center;"></div>
+
+<div class="container-fluid p-4">
+    <div class="text-center mb-4">
+        <h1 class="font-weight-bold" style="letter-spacing: -2px; font-size: 1.9rem;">DISTRITO FRESNILLO CENTRO</h1>
+        <div class="d-flex justify-content-center align-items-center gap-3">
+            <span class="badge badge-dark p-2 shadow-sm">LISTA ABC DE INTERESES</span>
+            <button class="btn btn-primary btn-sm rounded-pill shadow ml-3" onclick="toggleVista()" id="btnVista">
+                <i class="fas fa-list"></i> Vista Lista
+            </button>
+        </div>
+    </div>
+
+    <div id="dashboard" class="dashboard-iglesias"></div>
+
+    <div class="filtro-categorias">
+        <button class="btn-categoria btn-cat-ok" onclick="filtrarCategoria('OK')"> <i class="fas fa-water"></i> <span id="cnt-ok">0</span> </button>
+        <button class="btn-categoria btn-cat-s" onclick="filtrarCategoria('S')">S <span id="cnt-s">0</span></button>
+        <button class="btn-categoria btn-cat-a" onclick="filtrarCategoria('A')">A <span id="cnt-a">0</span></button>
+        <button class="btn-categoria btn-cat-b" onclick="filtrarCategoria('B')">B <span id="cnt-b">0</span></button>
+        <button class="btn-categoria btn-cat-c" onclick="filtrarCategoria('C')">C <span id="cnt-c">0</span></button>
+        <button class="btn-categoria btn-cat-reset" onclick="filtrarCategoria('')"><i class="fas fa-home"></i> </button>
+    </div>
+
+    <div class="row mb-3 mt-4">
+        <div class="col-6">
+            <button type="button" class="btn btn-outline-info btn-block" onclick="descargarJSON()" title="Descargar Respaldo JSON">
+                <i class="fas fa-download"></i>
+            </button>
+        </div>
+        <div class="col-6">
+            <label for="cargarArchivo" class="btn btn-outline-warning btn-block m-0" title="Cargar local">
+                <i class="fas fa-upload"></i>
+            </label>
+            <input type="file" id="cargarArchivo" style="display:none" onchange="cargarJSON(event)">
+        </div>
+    </div>
+
+    <div class="row mb-5 justify-content-center">
+        <div class="col-md-8">
+            <div class="search-box">
+                <i class="fas fa-search text-muted mr-3"></i>
+                <input type="text" id="mainSearch" placeholder="Nombre, Instructor, Edad o Iglesia..." onkeyup="ejecutarAcciones()">
+                <i class="fas fa-sync-alt text-info" style="cursor:pointer" onclick="resetTodo()" title="Reiniciar Filtros"></i>
+            </div>
+        </div>
+    </div>
+
+    <div id="listaEstudios"></div>
+</div>
+
+<div id="capaImpresion"></div>
+
+<div id="modalReporte" class="modal-box">
+    <h3 class="font-weight-bold mb-3">Generar Informe Especial</h3>
+    <div id="repPaso1">
+        <p class="text-muted">¿Qué grupo desea exportar?</p>
+        <button class="btn btn-outline-primary btn-block py-3 mb-2" onclick="setAlcance('DISTRITO')"><b>TODO EL DISTRITO</b></button>
+        <hr>
+        <h6>Seleccionar Iglesia:</h6>
+        <div id="listaIglRep" style="max-height: 250px; overflow-y: auto;" class="pr-2"></div>
+    </div>
+    <div id="repPaso2" style="display:none;">
+        <p class="text-muted">Filtro de Categoría para el reporte:</p>
+        <div class="row no-gutters">
+            <div class="col-12"><button class="btn btn-dark btn-block mb-2" onclick="finalizarRep('TODAS')">✨ TODAS LAS CATEGORÍAS</button></div>
+            <div class="col-6 p-1"><button class="btn btn-outline-warning btn-block text-dark" onclick="finalizarRep('S')">Cat. S</button></div>
+            <div class="col-6 p-1"><button class="btn btn-outline-success btn-block" onclick="finalizarRep('A')">Cat. A</button></div>
+            <div class="col-6 p-1"><button class="btn btn-outline-info btn-block" onclick="finalizarRep('B')">Cat. B</button></div>
+            <div class="col-6 p-1"><button class="btn btn-outline-danger btn-block" onclick="finalizarRep('C')">Cat. C</button></div>
+        </div>
+        <button class="btn btn-link btn-block mt-3" onclick="irRepPaso1()">« Volver</button>
+    </div>
+    <button class="btn btn-secondary btn-block mt-4" onclick="cerrarModales()">Cancelar</button>
+</div>
+
+<div id="modalRegistro" class="modal-box">
+    <h4 class="font-weight-bold mb-3" id="tituloReg">Ficha del Interesado</h4>
+    <form id="formABC">
+        <input type="hidden" id="regId">
+        <input type="text" id="regNombre" class="form-control form-control-lg mb-3 shadow-sm" placeholder="Nombre completo" required>
+        <div class="row mb-3">
+            <div class="col-6"><label class="small">Iglesia</label><select id="regIglesia" class="form-control"></select></div>
+            <div class="col-3"><label class="small">Edad</label><input type="number" id="regEdad" class="form-control" placeholder="0"></div>
+            <div class="col-3"><label class="small">Clasif.</label><select id="regClas" class="form-control"><option>S</option><option>A</option><option>B</option><option>C</option></select></div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-6"><label class="small">Lecciones Recibidas</label><input type="number" id="regLecc" class="form-control" value="0"></div>
+            <div class="col-6"><label class="small">Estudios por Semana</label><input type="number" id="regFrec" class="form-control" value="1"></div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-6"><input type="text" id="regInst" class="form-control" placeholder="Instructor"></div>
+            <div class="col-6"><input type="tel" id="regTel" class="form-control" placeholder="Tel. Instructor"></div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-6"><label class="small">Fecha Inicio</label><input type="date" id="regFecha" class="form-control"></div>
+            <div class="col-6"><label class="small">¿Ya es Bautizado?</label><select id="regBaut" class="form-control" onchange="toggleBautismo()"><option value="no">No</option><option value="si">Sí</option></select></div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <label class="small"> </label>
+                <textarea id="regNotas" class="form-control" rows="3" placeholder="Escribe aquí detalles importantes sobre el interesado..."></textarea>
+            </div>
+        </div>
+        <div id="divBaut" style="display:none;" class="p-3 bg-light border rounded mb-3">
+            <label class="small">Fecha de Bautismo:</label>
+            <input type="date" id="regFechaBaut" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-success btn-block py-3 font-weight-bold shadow">GUARDAR REGISTRO</button>
+    </form>
+</div>
+
+<div id="modalDetalle" class="modal-box">
+    <div id="detHeader" style="margin: -35px -35px 25px; padding: 40px; border-radius: 35px 35px 0 0; color: white;">
+        <h2 id="detNombre" class="m-0 font-weight-bold"></h2>
+        <p id="detIglesia" class="m-0 opacity-8"></p>
+    </div>
+    <div id="detCuerpo" style="font-size: 1.2rem; line-height: 2;"></div>
+    <hr>
+    <div class="d-flex justify-content-between">
+        <button class="btn btn-outline-danger" onclick="eliminarRegistro()"><i class="fas fa-trash-alt"></i> Eliminar</button>
+        <button class="btn btn-primary px-5" onclick="editarDesdeDetalle()"><i class="fas fa-edit"></i> Editar Ficha</button>
+        <button class="btn btn-secondary" onclick="cerrarModales()">Cerrar</button>
+    </div>
+</div>
+
+<div style="margin-top: 50px; opacity: 0.3; text-align: center;">
+    <small>Mantenimiento del Sistema</small><br>
+    <button type="button" class="btn btn-sm btn-link text-danger" onclick="borradoTotalSeguro()" style="font-size: 10px; text-decoration: none;">
+        <i class="fas fa-exterminator"></i> Restablecer Base de Datos
+    </button>
+</div>
+
+<div id="modalOverlay" class="modal-overlay" onclick="cerrarModales()"></div>
+
+<div class="fab-container">
+    <button class="btn-fab bg-warning" onclick="subirAGithub()" title="Subir cambios a la Nube">
+        <i class="fas fa-cloud-upload-alt"></i>
+    </button>
+    <button class="btn-fab bg-info" id="btnNubeFlash" onclick="cargarDesdeDrive()" title="Sincronizar desde Nube">
+        <i class="fa-solid fa-cloud-arrow-down"></i>
+    </button>
+    <button class="btn-fab bg-primary" onclick="abrirReporte('whatsapp')" title="WhatsApp por Categoría">
+        <i class="fab fa-whatsapp"></i>
+    </button>
+    <button class="btn-fab bg-dark" onclick="abrirReporte('impresion')" title="Imprimir Reporte">
+        <i class="fas fa-print"></i>
+    </button>
+    <button class="btn-fab bg-success" onclick="abrirModalRegistro()" title="Agregar Interesado">
+        <i class="fas fa-user-plus"></i>
+    </button>
+</div>
+
+<script>
+    /* --- CONFIGURACIÓN MAESTRA --- */
+    const IGLESIAS = {
+            "CENTRAL": { abbr: "CEN", color: "#5be9f8", t: "#000" },
+            "EL AHIJADERO": { abbr: "AHI", color: "#FF0000", t: "#fff" },
+            "SEIS DE ENERO": { abbr: "SEI", color: "#00008B", t: "#fff" },
+            "MORELOS": { abbr: "MOR", color: "#006847", t: "#fff" },
+            "MONTEMARIANA ARRIBA": { abbr: "MAR", color: "#FFA500", t: "#000" },
+            "EL OBLIGADO": { abbr: "OBL", color: "#b33b72", t: "#fff" },
+            "CANAÁN": { abbr: "CAN", color: "#2adb83", t: "#fff" },
+            "RIO DE MEDINA": { abbr: "RIO", color: "#09adff", t: "#fff" },
+            "LA CASITA": { abbr: "CAS", color: "#c2cc37", t: "#000" },
+            "VALPARAISO": { abbr: "VAL", color: "#ff00cd", t: "#fff" },
+            "MONTEMARIANA ABAJO": { abbr: "MAB", color: "#fff176", t: "#000" },
+            "EL BALUARTE": { abbr: "BAL", color: "#b25330", t: "#fff" }
+        };
+
+    const ICONOS = { "S": "⭐", "A": "🟢", "B": "🟠", "C": "🔴", "OK": "🟣" };
+    const PRIORIDAD = { "S": 1, "A": 2, "B": 3, "C": 4, "OK": 5 };
+
+    // Intentamos cargar lo que hay en el navegador
+    let datosGuardados = localStorage.getItem('fresnillo_abc_v17');
+
+    // Si los datos guardados son exactamente "[]" (vacío) porque acabamos de borrar, 
+    // o si no hay nada (null), cargamos los 20 ejemplos:
+    let db = (datosGuardados && datosGuardados !== "[]") 
+        ? JSON.parse(datosGuardados) 
+        : [
+        { id: 1, nombre: "Juan Pérez", edad: 45, iglesia: "CENTRAL", clasificacion: "A", lecciones: 15, frecuencia: 1, instructor: "Hno. David", tel: "4931010101", fecha: "2024-01-10", bautizado: "no", notas: "Tiene dudas sobre el sábado, pero asiste fielmente." },
+        /*{ id: 2, nombre: "María Garcia", edad: 32, iglesia: "MORELOS", clasificacion: "B", lecciones: 5, frecuencia: 1, instructor: "Sria. Martha", tel: "4932020202", fecha: "2024-02-05", bautizado: "no", notas: "Problemas de transporte para llegar a la iglesia." },
+        { id: 3, nombre: "Roberto Gómez", edad: 50, iglesia: "SEIS DE ENERO", clasificacion: "S", lecciones: 19, frecuencia: 2, instructor: "Hno. Felipe", tel: "4933030303", fecha: "2024-01-15", bautizado: "no", notas: "¡Decidido! Esperando la próxima fecha de bautismo." },
+        { id: 4, nombre: "Elena Ruiz", edad: 65, iglesia: "EL AHIJADERO", clasificacion: "C", lecciones: 3, frecuencia: 1, instructor: "Hna. Sofía", tel: "4934040404", fecha: "2024-03-01", bautizado: "no", notas: "Recién contactada en el plan misionero de salud." },
+        { id: 5, nombre: "Carlos Slim", edad: 12, iglesia: "CANAÁN", clasificacion: "B", lecciones: 12, frecuencia: 1, instructor: "Anc. Manuel", tel: "4935050505", fecha: "2024-01-15", bautizado: "no", notas: "Sus padres no son adventistas, requiere visitación familiar." }, 
+        { id: 6, nombre: "Lucía Méndez", edad: 28, iglesia: "VALPARAISO", clasificacion: "A", lecciones: 20, frecuencia: 1, instructor: "Hno. Juan", tel: "4936060606", fecha: "2023-12-20", bautizado: "no", notas: "Terminó el curso, falta decisión por el estilo de vida." }, 
+        { id: 7, nombre: "Andrés Manuel", edad: 70, iglesia: "MONTEMARIANA ARRIBA", clasificacion: "S", lecciones: 20, frecuencia: 1, instructor: "Pastor", tel: "4937070707", fecha: "2024-01-05", bautizado: "no", notas: "Ex-adventista regresando con mucha alegría." },
+        { id: 8, nombre: "Patricia Quintana", edad: 19, iglesia: "RIO DE MEDINA", clasificacion: "B", lecciones: 8, frecuencia: 2, instructor: "Hno. Saúl", tel: "4938080808", fecha: "2024-02-10", bautizado: "no", notas: "Estudiante universitaria, solo puede estudiar los domingos." },
+        { id: 9, nombre: "Pedrito Juárez", edad: 9, iglesia: "LA CASITA", clasificacion: "A", lecciones: 18, frecuencia: 1, instructor: "Hna. Gaby", tel: "4939090909", fecha: "2024-03-10", bautizado: "no", notas: "Niño de Primarios, muy inteligente y participativo." },
+        { id: 10, nombre: "Gloria Trevi", edad: 40, iglesia: "EL OBLIGADO", clasificacion: "A", lecciones: 25, frecuencia: 1, instructor: "Hno. Pedro", tel: "4931112131", fecha: "2023-10-01", bautizado: "si", notas: "Bautizada en la última campaña, ahora es discipuladora." },
+        { id: 11, nombre: "Vicente Fernández", edad: 80, iglesia: "EL BALUARTE", clasificacion: "B", lecciones: 14, frecuencia: 1, instructor: "Anc. Mateo", tel: "4932223334", fecha: "2024-01-20", bautizado: "no", notas: "Le cuesta leer, se le están dando los estudios grabados." },
+        { id: 12, nombre: "Thalia Sodi", edad: 44, iglesia: "MONTEMARIANA ABAJO", clasificacion: "S", lecciones: 21, frecuencia: 1, instructor: "Hna. Rosa", tel: "4935556667", fecha: "2024-02-05", bautizado: "no", notas: "Falta regularizar su situación matrimonial para el bautismo." },
+        { id: 13, nombre: "Saúl Álvarez", edad: 33, iglesia: "CENTRAL", clasificacion: "A", lecciones: 10, frecuencia: 1, instructor: "Hno. David", tel: "4931010101", fecha: "2024-02-20", bautizado: "no", notas: "Interesado en las profecías de Daniel y Apocalipsis." },
+        { id: 14, nombre: "Luis Miguel", edad: 52, iglesia: "MORELOS", clasificacion: "C", lecciones: 2, frecuencia: 1, instructor: "Sria. Martha", tel: "4932020202", fecha: "2024-03-05", bautizado: "no", notas: "Contactado por medio de la radio." },
+        { id: 15, nombre: "Salma Hayek", edad: 48, iglesia: "EL OBLIGADO", clasificacion: "B", lecciones: 11, frecuencia: 1, instructor: "Hno. Pedro", tel: "4931112131", fecha: "2024-01-30", bautizado: "no", notas: "Tiene problemas de salud, orar por su recuperación." },
+        { id: 16, nombre: "Diego Luna", edad: 41, iglesia: "CANAÁN", clasificacion: "A", lecciones: 21, frecuencia: 1, instructor: "Anc. Manuel", tel: "4935050505", fecha: "2023-12-01", bautizado: "si", notas: "Apoya en el equipo de recepción de la iglesia." },
+        { id: 17, nombre: "Yalitza Aparicio", edad: 30, iglesia: "VALPARAISO", clasificacion: "B", lecciones: 9, frecuencia: 1, instructor: "Hno. Juan", tel: "4936060606", fecha: "2024-02-15", bautizado: "no", notas: "Visitando el Grupo Pequeño los días miércoles." },
+        { id: 18, nombre: "Gael García", edad: 43, iglesia: "SEIS DE ENERO", clasificacion: "C", lecciones: 4, frecuencia: 1, instructor: "Hno. Felipe", tel: "4933030303", fecha: "2024-03-01", bautizado: "no", notas: "Muy receptivo a las verdades bíblicas." },
+        { id: 19, nombre: "Eugenio Derbez", edad: 60, iglesia: "EL AHIJADERO", clasificacion: "B", lecciones: 7, frecuencia: 1, instructor: "Hna. Sofía", tel: "4934040404", fecha: "2024-02-28", bautizado: "no", notas: "Necesita estudios sobre el estado de los muertos." },
+        { id: 20, nombre: "Kate del Castillo", edad: 51, iglesia: "MONTEMARIANA ABAJO", clasificacion: "A", lecciones: 16, frecuencia: 1, instructor: "Hna. Rosa", tel: "4935556667", fecha: "2024-01-10", bautizado: "no", notas: "Desea que sus hijos también tomen los estudios." }, */
+
+    ];
+
+    let fCat = "", fIgl = "", vistaGrid = true, currentId = null, mReporte = "", alcReporte = "";
+    let modoOrden = "defecto"; // "defecto", "inverso", "especial"
+
+    /* --- PROCESAMIENTO --- */
+   function ejecutarAcciones() {
+       const bus = document.getElementById('mainSearch').value.toLowerCase();
+       let list = db.filter(e => {
+           const mB = e.nombre.toLowerCase().includes(bus) || e.instructor.toLowerCase().includes(bus) || e.iglesia.toLowerCase().includes(bus) || (e.edad && e.edad.toString() === bus);
+           const mC = (fCat === "") ? true : (fCat === "OK" ? e.bautizado === "si" : (e.clasificacion === fCat && e.bautizado === "no"));
+           const mI = (fIgl === "") ? true : e.iglesia === fIgl;
+           return mB && mC && mI;
+       });
+
+       // Obtenemos el orden de las iglesias tal cual están en tu objeto IGLESIAS
+       const ordenIglesias = Object.keys(IGLESIAS);
+
+       list.sort((a, b) => {
+           // REGLA MAESTRA: Los bautizados (OK) siempre al final
+           if (a.bautizado === "si" && b.bautizado === "no") return 1;
+           if (a.bautizado === "no" && b.bautizado === "si") return -1;
+
+           if (modoOrden === "defecto") {
+               return PRIORIDAD[a.clasificacion] - PRIORIDAD[b.clasificacion];
+           } 
+           else if (modoOrden === "inverso") {
+               return PRIORIDAD[b.clasificacion] - PRIORIDAD[a.clasificacion];
+           } 
+           else if (modoOrden === "especial") {
+               // 1. Orden por Iglesia (según los 12 botones)
+               const idxA = ordenIglesias.indexOf(a.iglesia);
+               const idxB = ordenIglesias.indexOf(b.iglesia);
+               if (idxA !== idxB) return idxA - idxB;
+
+               // 2. Si son la misma iglesia, ordenar por Clasificación (S, A, B, C)
+               if (PRIORIDAD[a.clasificacion] !== PRIORIDAD[b.clasificacion]) {
+                   return PRIORIDAD[a.clasificacion] - PRIORIDAD[b.clasificacion];
+               }
+
+               // 3. Si son misma iglesia y misma clasif, por Nombre A-Z
+               return a.nombre.localeCompare(b.nombre);
+           }
+           return 0;
+       });
+
+       renderDashboard();
+       renderCards(list);
+       actualizarContadores();
+   }
+
+    function renderCards(datos) {
+        const cont = document.getElementById('listaEstudios');
+        cont.innerHTML = "";
+        
+        datos.forEach(e => {
+            const igl = IGLESIAS[e.iglesia];
+            let tagC = (e.bautizado === 'si') ? "tag-ok-animado" : (e.clasificacion === 'S' ? "tag-s-animado" : "");
+            let barC = e.clasificacion === 'A' ? 'var(--color-a)' : (e.clasificacion === 'B' ? 'var(--color-b)' : 'var(--color-c)');
+            if(e.bautizado === 'si') barC = 'var(--color-bautizado)';
+
+            // Bloque de Niños
+            let ninoHtml = "";
+            if(e.edad && e.edad < 13) {
+                ninoHtml = `<span class="badge-nino"><i class="fas fa-baby"></i> Niño</span> `;
+                if(e.edad >= 9) ninoHtml += `<span class="badge-bautismo-inf">Candidato Bautismo</span>`;
+            }
+
+            cont.innerHTML += `
+                <div class="estudio-card ${vistaGrid ? '' : 'compacta'}" style="border-left-color:${igl.color}" onclick="verDetalle(${e.id})">
+                    <div class="clasificacion-tag ${tagC}" style="background-color:${tagC ? '' : barC}">
+                        ${e.bautizado === 'si' ? 'OK' : e.clasificacion}
+                    </div>
+                    <div class="w-100">
+                        <div class="font-weight-bold" style="font-size:1.3rem">${e.nombre} <small class="text-muted">(${e.edad || '?'} años)</small></div>
+                        <div class="my-1">${ninoHtml}</div>
+                        <div class="small text-muted font-weight-bold"><i class="fas fa-church"></i> ${e.iglesia}</div>
+                        ${vistaGrid ? `
+                            <div class="small mt-1"><i class="fas fa-user-tie"></i> ${e.instructor} | <i class="fas fa-phone"></i> ${e.tel}</div>
+                            <div class="progress mt-2" style="height:10px; border-radius:10px;">
+                                <div class="progress-bar ${e.clasificacion === 'S' && e.bautizado === 'no' ? 'tag-s-animado' : ''}" style="width:${(e.lecciones/20)*100}%; background-color:${barC}"></div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>`;
+        });
+    }
+
+    /* --- SISTEMA DE REPORTES (WHATSAPP E IMPRESIÓN) --- */
+    function abrirReporte(modo) {
+        mReporte = modo; irRepPaso1();
+        const lI = document.getElementById('listaIglRep'); lI.innerHTML = "";
+        Object.keys(IGLESIAS).forEach(ig => {
+            lI.innerHTML += `<button class="btn btn-light btn-block border text-left mb-1" onclick="setAlcance('${ig}')"><i class="fas fa-church mr-2"></i> ${ig}</button>`;
+        });
+        document.getElementById('modalReporte').style.display = 'block';
+        document.getElementById('modalOverlay').style.display = 'block';
+    }
+
+    function setAlcance(alc) { alcReporte = alc; document.getElementById('repPaso1').style.display = 'none'; document.getElementById('repPaso2').style.display = 'block'; }
+    function irRepPaso1() { document.getElementById('repPaso1').style.display = 'block'; document.getElementById('repPaso2').style.display = 'none'; }
+
+    function finalizarRep(cat) {
+        let filtrados = db.filter(e => e.bautizado === 'no');
+        if(alcReporte !== 'DISTRITO') filtrados = filtrados.filter(e => e.iglesia === alcReporte);
+        if(cat !== 'TODAS') filtrados = filtrados.filter(e => e.clasificacion === cat);
+
+        if(mReporte === 'whatsapp') {
+            enviarWA(filtrados);
+        } else {
+            hacerPrint(filtrados);
+        }
+        cerrarModales();
+    }
+
+    function enviarWA(datos) {
+        let t = `*DISTRITO FRESNILLO CENTRO*\n`;
+        t += alcReporte === 'DISTRITO' ? `_Reporte General del Distrito_\n` : `_Iglesia: ${alcReporte}_\n`;
+        t += `S=${ICONOS.S} A=${ICONOS.A} B=${ICONOS.B} C=${ICONOS.C}\n\n`;
+        datos.forEach(e => {
+                let nino = (e.edad && e.edad < 13) ? `🧒 (Edad: ${e.edad}) ` : "";
+                t += `👤 *${e.nombre}* ${nino}\n`;
+                t += `Instructor: ${e.instructor} | Tel: ${e.tel}\n`;
+                if(e.notas) t += `📝 Nota: ${e.notas}\n`; // <--- AGREGAR ESTA LÍNEA
+                t += `Lecc: ${e.lecciones}/20 | Clas: ${ICONOS[e.clasificacion]}${e.clasificacion}\n\n`;
+            });
+        window.open(`https://wa.me/?text=${encodeURIComponent(t)}`);
+    }
+
+    function hacerPrint(datos) {
+        const area = document.getElementById('capaImpresion');
+        let h = `<div class="hoja-print"><div class="header-print"><h1>DISTRITO FRESNILLO CENTRO</h1><h3>INFORME ABC - ${alcReporte}</h3></div>`;
+        datos.forEach(e => {
+            h += `<div class="row-print">
+                <div><b style="font-size:14pt">${e.nombre}</b> (${e.edad || '?'} años)<br>${e.iglesia} | Inst: ${e.instructor}</div>
+                <div class="text-right">${ICONOS[e.clasificacion]} ${e.clasificacion}<br><b>Lecciones: ${e.lecciones}/20</b></div>
+            </div>`;
+        });
+        h += `<div class="mt-5 d-flex justify-content-around"><div style="border-top:2px solid #000; width:250px; text-align:center; padding-top:10px">Director Min. Personales</div><div style="border-top:2px solid #000; width:250px; text-align:center; padding-top:10px">Pastor Distrital</div></div></div>`;
+        area.innerHTML = h;
+        setTimeout(() => window.print(), 500);
+    }
+
+    /* --- UTILIDADES --- */
+    function toggleVista() {
+        vistaGrid = !vistaGrid;
+        document.getElementById('btnVista').innerHTML = vistaGrid ? '<i class="fas fa-list"></i> Vista Lista' : '<i class="fas fa-th-large"></i> Vista Tarjetas';
+        ejecutarAcciones();
+    }
+
+    function verDetalle(id) {
+        currentId = id; const e = db.find(x => x.id === id);
+        const i = IGLESIAS[e.iglesia];
+        document.getElementById('detHeader').style.background = i.color;
+        document.getElementById('detHeader').style.color = i.t;
+        document.getElementById('detNombre').innerText = e.nombre;
+        document.getElementById('detIglesia').innerText = e.iglesia;
+        
+        let meta = calcularMeta(e.fecha, e.lecciones, e.frecuencia);
+        
+        document.getElementById('detCuerpo').innerHTML = `
+            <p><i class="fas fa-id-card text-primary"></i> <strong>Edad:</strong> ${e.edad || 'Desconocida'} años</p>
+            <p><i class="fas fa-user-tie text-secondary"></i> <strong>Instructor:</strong> ${e.instructor}</p>
+            <p><i class="fas fa-phone text-success"></i> <strong>WhatsApp:</strong> <a href="tel:${e.tel}">${e.tel}</a></p>
+            <p><i class="fas fa-book-open text-info"></i> <strong>Lecciones:</strong> ${e.lecciones} de 20</p>
+            <p><i class="fas fa-star text-warning"></i> <strong>Clasificación:</strong> ${e.clasificacion}</p>
+            <p class="text-primary font-weight-bold" style="font-size:1.4rem"><i class="fas fa-calendar-check"></i> Meta Bautismo: ${meta}</p>
+            <hr>
+            <p><strong><i class="fas fa-comment-dots text-warning"></i> </strong><br>
+            <span style="font-size: 1.1rem; color: #444; line-height: 1.4; display: block; margin-top: 5px;">
+                ${e.notas || "Sin comentarios adicionales."}
+            </span></p>
+        `;
+        document.getElementById('modalDetalle').style.display = 'block';
+        document.getElementById('modalOverlay').style.display = 'block';
+    }
+
+    function calcularMeta(f, l, fr) {
+        if(!f || !fr || fr <= 0) return "Pendiente";
+        let rest = 20 - l; if(rest <= 0) return "¡LISTO!";
+        let d = new Date(f); d.setDate(d.getDate() + (rest/fr)*7);
+        return d.toLocaleDateString();
+    }
+
+    function renderDashboard() {
+        const d = document.getElementById('dashboard'); 
+        d.innerHTML = "";
+        Object.keys(IGLESIAS).forEach(k => {
+            const n = db.filter(e => e.iglesia === k && e.bautizado === 'no').length;
+            const infoIgl = IGLESIAS[k]; // Obtenemos la configuración de la iglesia
+            
+            d.innerHTML += `
+                <div class="iglesia-stat-card" style="border-bottom-color:${infoIgl.color}" onclick="fIgl='${k}'; ejecutarAcciones()">
+                    <h6>${infoIgl.abbr}</h6> 
+                    <div class="count">${n}</div>
+                </div>`;
+        });
+    }
+
+    const DEFINICIONES = {
+            "A": "<b>CLASIFICACIÓN A:</b><br>1. Curso finalizado.<br>2. Ex-adventistas.<br>3. Hijos de adventistas.<br>4. Asistencia regular.<br>5. Listos para llamado.",
+            "B": "<b>CLASIFICACIÓN B:</b><br>1. Mayoría de estudios recibidos.<br>2. Tiene objeciones (Sábado, Matrimonio o Dudas).",
+            "C": "<b>CLASIFICACIÓN C:</b><br>1. Ha iniciado curso bíblico.<br>2. Comenzando a asistir al GPC.",
+            "S": "<b>CLASIFICACIÓN S:</b><br>¡ESTÁN LISTOS PARA EL BAUTISMO!",
+            "OK": "<b>CLASIFICACIÓN OK:</b><br>PERSONAS YA BAUTIZADAS."
+        };
+
+
+    function filtrarCategoria(c) {
+            fCat = c;
+            const box = document.getElementById('catInfoBox');
+            
+            if(c !== "" && DEFINICIONES[c] && box) {
+                // Usamos innerHTML para que reconozca los saltos de línea <br>
+                box.innerHTML = DEFINICIONES[c];
+                box.style.display = 'block'; 
+                
+                // Aumentamos a 4 segundos para que dé tiempo de leer los puntos
+                setTimeout(() => { box.style.display = 'none'; }, 4000);
+            } else if (box) {
+                box.style.display = 'none';
+            }
+            
+            ejecutarAcciones();
+        }
+
+    function actualizarContadores() {
+        document.getElementById('cnt-ok').innerText = db.filter(e => e.bautizado === 'si').length;
+        document.getElementById('cnt-s').innerText = db.filter(e => e.clasificacion === 'S' && e.bautizado === 'no').length;
+        document.getElementById('cnt-a').innerText = db.filter(e => e.clasificacion === 'A' && e.bautizado === 'no').length;
+        document.getElementById('cnt-b').innerText = db.filter(e => e.clasificacion === 'B' && e.bautizado === 'no').length;
+        document.getElementById('cnt-c').innerText = db.filter(e => e.clasificacion === 'C' && e.bautizado === 'no').length;
+    }
+
+    function resetTodo() { document.getElementById('mainSearch').value = ""; fCat = ""; fIgl = ""; ejecutarAcciones(); }
+    function cerrarModales() { document.querySelectorAll('.modal-box, .modal-overlay').forEach(m => m.style.display = 'none'); }
+    function toggleBautismo() { document.getElementById('divBaut').style.display = (document.getElementById('regBaut').value === 'si' ? 'block' : 'none'); }
+
+    function abrirModalRegistro() {
+        currentId = null; document.getElementById('formABC').reset();
+        document.getElementById('tituloReg').innerText = "Nuevo Interesado";
+        document.getElementById('regId').value = "";
+        document.getElementById('modalRegistro').style.display = 'block';
+        document.getElementById('modalOverlay').style.display = 'block';
+    }
+
+    document.getElementById('formABC').onsubmit = (ev) => {
+        ev.preventDefault();
+        const id = document.getElementById('regId').value;
+        const n = {
+            id: id ? parseInt(id) : Date.now(),
+            nombre: document.getElementById('regNombre').value,
+            edad: parseInt(document.getElementById('regEdad').value) || 0,
+            iglesia: document.getElementById('regIglesia').value,
+            clasificacion: document.getElementById('regClas').value,
+            lecciones: parseInt(document.getElementById('regLecc').value) || 0,
+            frecuencia: parseInt(document.getElementById('regFrec').value) || 1,
+            instructor: document.getElementById('regInst').value,
+            tel: document.getElementById('regTel').value,
+            fecha: document.getElementById('regFecha').value,
+            bautizado: document.getElementById('regBaut').value,
+            notas: document.getElementById('regNotas').value
+        };
+        if(id) { const i = db.findIndex(x => x.id === n.id); db[i] = n; } else { db.push(n); }
+        localStorage.setItem('fresnillo_abc_v17', JSON.stringify(db));
+        cerrarModales(); ejecutarAcciones();
+    };
+
+    function editarDesdeDetalle() {
+        const e = db.find(x => x.id === currentId);
+        document.getElementById('regId').value = e.id;
+        document.getElementById('regNombre').value = e.nombre;
+        document.getElementById('regEdad').value = e.edad || "";
+        document.getElementById('regIglesia').value = e.iglesia;
+        document.getElementById('regClas').value = e.clasificacion;
+        document.getElementById('regLecc').value = e.lecciones;
+        document.getElementById('regFrec').value = e.frecuencia || 1;
+        document.getElementById('regInst').value = e.instructor;
+        document.getElementById('regTel').value = e.tel;
+        document.getElementById('regFecha').value = e.fecha;
+        document.getElementById('regBaut').value = e.bautizado;
+        document.getElementById('regNotas').value = e.notas || "";
+        toggleBautismo();
+        document.getElementById('modalDetalle').style.display = 'none';
+        document.getElementById('modalRegistro').style.display = 'block';
+
+    }
+
+    function eliminarRegistro() {
+        if(confirm("¿Seguro que quieres borrar este registro?")) {
+            db = db.filter(x => x.id !== currentId);
+            localStorage.setItem('fresnillo_abc_v17', JSON.stringify(db));
+            cerrarModales(); ejecutarAcciones();
+        }
+    }
+
+    // Inicializar Selects
+    const selI = document.getElementById('regIglesia');
+    Object.keys(IGLESIAS).forEach(k => selI.innerHTML += `<option>${k}</option>`);
+
+    ejecutarAcciones();
+
+
+    /* --- SISTEMA DE ATAJOS Y CIERRE RÁPIDO --- */
+
+    // 1. Escuchar la tecla ESCAPE
+    /* --- SISTEMA INTEGRAL DE ATAJOS DE TECLADO --- */
+
+    // Primero definimos la función para que no de error al ser llamada
+    function mostrarAviso(msg) {
+        let aviso = document.getElementById('aviso-teclado');
+        if(!aviso) {
+            aviso = document.createElement('div');
+            aviso.id = 'aviso-teclado';
+            aviso.style = "position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:white; padding:10px 20px; border-radius:20px; z-index:9999; font-size:14px; pointer-events:none; transition:0.3s; font-weight:bold; border: 1px solid white;";
+            document.body.appendChild(aviso);
+        }
+        aviso.innerText = msg;
+        aviso.style.opacity = "1";
+        setTimeout(() => { aviso.style.opacity = "0"; }, 2000);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        // 1. ATAJO: ESCAPE (Cerrar o Limpiar)
+        if (e.key === "Escape" || e.key === "Esc") {
+            const modalesVisibles = Array.from(document.querySelectorAll('.modal-box'))
+                                         .some(m => m.style.display === 'block');
+            
+            if (modalesVisibles || (document.getElementById('catInfoBox') && document.getElementById('catInfoBox').style.display === 'block')) {
+                cerrarModales();
+                if(document.getElementById('catInfoBox')) document.getElementById('catInfoBox').style.display = 'none';
+            } else {
+                limpiarYEnfocarBuscador();
+            }
+            return; 
+        }
+
+        // BLOQUEO DE SEGURIDAD: No activar atajos si escribes en un formulario
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        // 2. ATAJOS TECLADO NUMÉRICO
+                switch (e.key) {
+                    case ".":
+                    case "Decimal":
+                        e.preventDefault(); // Evita escribir el punto en el buscador
+                        abrirModalRegistro();
+                        // Retraso de 100ms para asegurar que el modal esté visible antes de dar foco
+                        setTimeout(() => {
+                            const campoNombre = document.getElementById('regNombre');
+                            if (campoNombre) campoNombre.focus();
+                        }, 100);
+                        mostrarAviso("Nuevo Registro...");
+                        break;
+                    case "+":
+                        modoOrden = "defecto";
+                        mostrarAviso("Orden: Prioridad S → A → B → C");
+                        ejecutarAcciones();
+                        break;
+                    case "-":
+                        modoOrden = "inverso";
+                        mostrarAviso("Orden: Prioridad C → B → A → S");
+                        ejecutarAcciones();
+                        break;
+                    case "*":
+                        fCat = "OK";
+                        mostrarAviso("Filtro: Solo Bautizados (OK)");
+                        ejecutarAcciones();
+                        break;
+                    case "0":
+                        modoOrden = "especial";
+                        mostrarAviso("Orden: Iglesia → Clasificación → Nombre");
+                        ejecutarAcciones();
+                        break;
+                    case "1":
+                        fCat = "A";
+                        modoOrden = "especial"; 
+                        mostrarAviso("Filtrando: Categoría A por Iglesias");
+                        ejecutarAcciones();
+                        break;
+                    case "2":
+                        fCat = "B";
+                        modoOrden = "especial";
+                        mostrarAviso("Filtrando: Categoría B por Iglesias");
+                        ejecutarAcciones();
+                        break;
+                    case "3":
+                        fCat = "C";
+                        modoOrden = "especial";
+                        mostrarAviso("Filtrando: Categoría C por Iglesias");
+                        ejecutarAcciones();
+                        break;
+                    case "/":
+                        fCat = "S";
+                        modoOrden = "especial";
+                        mostrarAviso("Filtrando: Categoría S por Iglesias");
+                        ejecutarAcciones();
+                        break;
+                }
+            });
+
+    // 2. Cerrar modales al dar DOBLE CLIC sobre ellos
+    document.querySelectorAll('.modal-box').forEach(modal => {
+        modal.addEventListener('dblclick', function() {
+            cerrarModales();
+        });
+    });
+
+    // También para el cuadro de definiciones (catInfoBox)
+    const boxDef = document.getElementById('catInfoBox');
+    if(boxDef) {
+        boxDef.addEventListener('dblclick', () => boxDef.style.display = 'none');
+    }
+
+    // 3. Doble clic en la barra de búsqueda para resetear
+    const inputBusqueda = document.getElementById('mainSearch');
+    if (inputBusqueda) {
+        inputBusqueda.addEventListener('dblclick', () => {
+            limpiarYEnfocarBuscador();
+        });
+    }
+
+    // Función auxiliar para resetear todo el estado
+    function limpiarYEnfocarBuscador() {
+        resetTodo(); // Llama a tu función existente que limpia fCat y fIgl
+        const bus = document.getElementById('mainSearch');
+        bus.value = "";
+        bus.focus(); // Pone el cursor listo para escribir
+        ejecutarAcciones(); // Refresca la lista
+    }
+
+
+
+
+    // --- FUNCIONES DE RESPALDO (JSON) ---
+
+    function descargarJSON() {
+        // 1. Aplicamos el Ordenamiento "Formato 4" (Iglesia -> Clasificación -> Nombre)
+        const ordenIglesias = Object.keys(IGLESIAS);
+        let copiaSeguridad = [...db];
+
+        copiaSeguridad.sort((a, b) => {
+            // Orden por Iglesia (según tu objeto IGLESIAS)
+            const idxA = ordenIglesias.indexOf(a.iglesia);
+            const idxB = ordenIglesias.indexOf(b.iglesia);
+            if (idxA !== idxB) return idxA - idxB;
+
+            // Orden por Clasificación (S, A, B, C)
+            if (PRIORIDAD[a.clasificacion] !== PRIORIDAD[b.clasificacion]) {
+                return PRIORIDAD[a.clasificacion] - PRIORIDAD[b.clasificacion];
+            }
+
+            // Orden alfabético por Nombre
+            return a.nombre.localeCompare(b.nombre);
+        });
+
+        // 2. Crear y descargar el archivo
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(copiaSeguridad, null, 4));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "fresnillo_abc_respaldo.json");
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+        
+        mostrarAviso("Respaldo descargado con éxito");
+    }
+
+    function cargarJSON(event) {
+        const archivo = event.target.files[0];
+        if (!archivo) return;
+
+        const lector = new FileReader();
+        lector.onload = function(e) {
+            try {
+                const contenido = JSON.parse(e.target.result);
+                if (Array.isArray(contenido)) {
+                    if (confirm("¿Deseas reemplazar la base de datos actual con este archivo?")) {
+                        db = contenido;
+                        localStorage.setItem('fresnillo_abc_v17', JSON.stringify(db));
+                        ejecutarAcciones();
+                        mostrarAviso("Base de datos actualizada");
+                    }
+                } else {
+                    alert("El archivo no tiene el formato correcto.");
+                }
+            } catch (error) {
+                alert("Error al leer el archivo JSON.");
+            }
+        };
+        lector.readAsText(archivo);
+    }
+
+
+
+
+
+
+
+        function borradoTotalSeguro() {
+            if (confirm("⚠️ ¿Deseas RESTABLECER el sistema a los valores de fábrica?")) {
+                setTimeout(() => {
+                    if (confirm("🛑 Se borrarán tus cambios personales y volverán los 20 ejemplos iniciales. ¿Continuar?")) {
+                        const validacion = prompt("Escribe BORRAR para confirmar:");
+                        
+                        if (validacion && validacion.toUpperCase() === "BORRAR") {
+                            // EL TRUCO: Borramos el registro del navegador por completo
+                            localStorage.removeItem('fresnillo_abc_v17');
+                            localStorage.clear();
+                            
+                            alert("Sistema restablecido. Volverás a ver los 20 ejemplos originales.");
+                            location.reload(); 
+                        }
+                    }
+                }, 500);
+            }
+        }
+
+
+
+    /* --- SISTEMA DE NUBE GITHUB GIST (SOLUCIÓN DEFINITIVA) --- */
+
+    const GIST_ID = "62bf60b4163570e6b7bbb1c53f45f47b";
+    const NOMBRE_ARCHIVO = "abc_intereses.json";
+    const MI_TOKEN = "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"; // Tu Token Real
+
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const btn = document.getElementById('btnNubeFlash');
+            if(btn) btn.classList.add('fade-out');
+        }, 4000); 
+    });
+
+    // 1. FUNCIÓN PARA BAJAR DATOS (Botón Azul)
+    async function cargarDesdeDrive() {
+        // Usamos la API de GitHub para traer siempre lo más reciente ignorando el caché
+        const URL_RAW = `https://gist.githubusercontent.com/Pantwn/${GIST_ID}/raw/${NOMBRE_ARCHIVO}?t=${new Date().getTime()}`;
+        
+        if (typeof mostrarAviso === "function") mostrarAviso("Sincronizando con GitHub...");
+
+        try {
+            const respuesta = await fetch(URL_RAW);
+            if (!respuesta.ok) throw new Error("No se pudo conectar con la nube.");
+            
+            const datosNuevos = await respuesta.json();
+
+            if (Array.isArray(datosNuevos)) {
+                // Ordenamiento por Prioridad e Iglesia
+                const ordenIglesias = (typeof IGLESIAS !== 'undefined') ? Object.keys(IGLESIAS) : [];
+                const prioridades = (typeof PRIORIDAD !== 'undefined') ? PRIORIDAD : {};
+
+                datosNuevos.sort((a, b) => {
+                    const idxA = ordenIglesias.indexOf(a.iglesia);
+                    const idxB = ordenIglesias.indexOf(b.iglesia);
+                    if (idxA !== idxB) return idxA - idxB;
+                    const pA = prioridades[a.clasificacion] || 99;
+                    const pB = prioridades[b.clasificacion] || 99;
+                    if (pA !== pB) return pA - pB;
+                    return (a.nombre || "").localeCompare(b.nombre || "");
+                });
+
+                db = datosNuevos;
+                localStorage.setItem('fresnillo_abc_v17', JSON.stringify(db));
+                
+                if (typeof ejecutarAcciones === "function") ejecutarAcciones(); else location.reload();
+                if (typeof mostrarAviso === "function") mostrarAviso("✅ Datos descargados de la nube");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error al bajar datos. Verifica que el Gist sea público.");
+        }
+    }
+
+    // 2. FUNCIÓN PARA SUBIR DATOS (Botón Amarillo)
+    async function subirAGithub() {
+        if (db.length === 0) return alert("No hay datos para subir.");
+        if (!confirm(`¿Deseas subir ${db.length} registros a la nube? Esto reemplazará lo que esté en internet.`)) return;
+
+        if (typeof mostrarAviso === "function") mostrarAviso("Subiendo datos a GitHub...");
+
+        try {
+            const respuesta = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                method: "PATCH",
+                headers: {
+                    "Authorization": `token ${MI_TOKEN}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    files: {
+                        [NOMBRE_ARCHIVO]: {
+                            content: JSON.stringify(db, null, 4)
+                        }
+                    }
+                })
+            });
+
+            if (respuesta.ok) {
+                if (typeof mostrarAviso === "function") mostrarAviso("✅ ¡Nube Actualizada con Éxito!");
+            } else {
+                const err = await respuesta.json();
+                alert("Error de GitHub: " + err.message);
+            }
+        } catch (error) {
+            alert("Error de conexión al subir datos.");
+        }
+    }
+</script>
+</body>
+</html>
