@@ -1026,92 +1026,83 @@
 
 
 
-    /* --- SISTEMA DE NUBE GITHUB GIST (SOLUCIÓN DEFINITIVA) --- */
+    /* --- SISTEMA DE NUBE GITHUB GIST (PROTEGIDO) --- */
 
-    const GIST_ID = "62bf60b4163570e6b7bbb1c53f45f47b";
-    const NOMBRE_ARCHIVO = "abc_intereses.json";
-    const MI_TOKEN = "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"; // Tu Token Real
+        const GIST_ID = "62bf60b4163570e6b7bbb1c53f45f47b";
+        const NOMBRE_ARCHIVO = "abc_intereses.json";
 
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            const btn = document.getElementById('btnNubeFlash');
-            if(btn) btn.classList.add('fade-out');
-        }, 4000); 
-    });
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const btn = document.getElementById('btnNubeFlash');
+                if(btn) btn.classList.add('fade-out');
+            }, 4000); 
+        });
 
-    // 1. FUNCIÓN PARA BAJAR DATOS (Botón Azul)
-    async function cargarDesdeDrive() {
-        // Usamos la API de GitHub para traer siempre lo más reciente ignorando el caché
-        const URL_RAW = `https://gist.githubusercontent.com/Pantwn/${GIST_ID}/raw/${NOMBRE_ARCHIVO}?t=${new Date().getTime()}`;
-        
-        if (typeof mostrarAviso === "function") mostrarAviso("Sincronizando con GitHub...");
-
-        try {
-            const respuesta = await fetch(URL_RAW);
-            if (!respuesta.ok) throw new Error("No se pudo conectar con la nube.");
+        // 1. FUNCIÓN PARA BAJAR DATOS (Botón Azul)
+        async function cargarDesdeDrive() {
+            const URL_RAW = `https://gist.githubusercontent.com/Pantwn/${GIST_ID}/raw/${NOMBRE_ARCHIVO}?t=${new Date().getTime()}`;
             
-            const datosNuevos = await respuesta.json();
+            if (typeof mostrarAviso === "function") mostrarAviso("Sincronizando con GitHub...");
 
-            if (Array.isArray(datosNuevos)) {
-                // Ordenamiento por Prioridad e Iglesia
-                const ordenIglesias = (typeof IGLESIAS !== 'undefined') ? Object.keys(IGLESIAS) : [];
-                const prioridades = (typeof PRIORIDAD !== 'undefined') ? PRIORIDAD : {};
+            try {
+                const respuesta = await fetch(URL_RAW);
+                if (!respuesta.ok) throw new Error("No se pudo conectar con la nube.");
+                
+                const datosNuevos = await respuesta.json();
 
-                datosNuevos.sort((a, b) => {
-                    const idxA = ordenIglesias.indexOf(a.iglesia);
-                    const idxB = ordenIglesias.indexOf(b.iglesia);
-                    if (idxA !== idxB) return idxA - idxB;
-                    const pA = prioridades[a.clasificacion] || 99;
-                    const pB = prioridades[b.clasificacion] || 99;
-                    if (pA !== pB) return pA - pB;
-                    return (a.nombre || "").localeCompare(b.nombre || "");
+                if (Array.isArray(datosNuevos)) {
+                    db = datosNuevos;
+                    localStorage.setItem('fresnillo_abc_v17', JSON.stringify(db));
+                    
+                    if (typeof ejecutarAcciones === "function") ejecutarAcciones(); else location.reload();
+                    if (typeof mostrarAviso === "function") mostrarAviso("✅ Datos descargados de la nube");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Error al bajar datos. Verifica tu conexión.");
+            }
+        }
+
+        // 2. FUNCIÓN PARA SUBIR DATOS (Botón Amarillo)
+        async function subirAGithub() {
+            if (db.length === 0) return alert("No hay datos para subir.");
+            
+            // --- SOLICITUD DE TOKEN SEGURO ---
+            const tokenSeguro = prompt("Introduce tu Token de GitHub (ghp_...) para autorizar la subida:");
+            
+            if (!tokenSeguro || tokenSeguro.trim() === "") {
+                alert("Subida cancelada: Se requiere el token.");
+                return;
+            }
+
+            if (typeof mostrarAviso === "function") mostrarAviso("Subiendo datos a GitHub...");
+
+            try {
+                const respuesta = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Authorization": `token ${tokenSeguro}`, // Usa el token que escribas en la ventanita
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        files: {
+                            [NOMBRE_ARCHIVO]: {
+                                content: JSON.stringify(db, null, 4)
+                            }
+                        }
+                    })
                 });
 
-                db = datosNuevos;
-                localStorage.setItem('fresnillo_abc_v17', JSON.stringify(db));
-                
-                if (typeof ejecutarAcciones === "function") ejecutarAcciones(); else location.reload();
-                if (typeof mostrarAviso === "function") mostrarAviso("✅ Datos descargados de la nube");
+                if (respuesta.ok) {
+                    if (typeof mostrarAviso === "function") mostrarAviso("✅ ¡Nube Actualizada con Éxito!");
+                } else {
+                    const err = await respuesta.json();
+                    alert("Error de GitHub: " + err.message + ". Asegúrate de que el Token sea correcto.");
+                }
+            } catch (error) {
+                alert("Error de conexión al subir datos.");
             }
-        } catch (error) {
-            console.error(error);
-            alert("Error al bajar datos. Verifica que el Gist sea público.");
         }
-    }
-
-    // 2. FUNCIÓN PARA SUBIR DATOS (Botón Amarillo)
-    async function subirAGithub() {
-        if (db.length === 0) return alert("No hay datos para subir.");
-        if (!confirm(`¿Deseas subir ${db.length} registros a la nube? Esto reemplazará lo que esté en internet.`)) return;
-
-        if (typeof mostrarAviso === "function") mostrarAviso("Subiendo datos a GitHub...");
-
-        try {
-            const respuesta = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                method: "PATCH",
-                headers: {
-                    "Authorization": `token ${MI_TOKEN}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    files: {
-                        [NOMBRE_ARCHIVO]: {
-                            content: JSON.stringify(db, null, 4)
-                        }
-                    }
-                })
-            });
-
-            if (respuesta.ok) {
-                if (typeof mostrarAviso === "function") mostrarAviso("✅ ¡Nube Actualizada con Éxito!");
-            } else {
-                const err = await respuesta.json();
-                alert("Error de GitHub: " + err.message);
-            }
-        } catch (error) {
-            alert("Error de conexión al subir datos.");
-        }
-    }
 </script>
 </body>
 </html>
